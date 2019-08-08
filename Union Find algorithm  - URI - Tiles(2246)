@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+//The "find" function is responsible to find the origin of a node, it receives the node "n" and the array of origins "origin".
+int find(int n, int *origin)
+{
+    //The origin was found when the node value is equal to it's index (that means that the origin of the node is in itself).
+    //When it happens the origin (variable n) is returned.
+    if(origin[n] == n)
+    {
+        return n;
+    }
+    //If "n" is not the origin the function "find" is returned to find the origin of "n".
+    return find(origin[n],origin);
+}
+
+//The function "unionN" is used to bind two nodes, it receives the nodes ("n1" and "n2") and the array of origins.
+void unionN(int n1, int n2, int *origin)
+{
+    //Finding the origins.
+    n1 = find(n1, origin);
+    n2 = find(n2, origin);
+
+    //If the nodes already have the same origin they don't need to be linked.
+    if(n1!=n2)
+    {
+        origin[n2] = n1;
+    }
+
+}
+
+//The function, "convertNodeID", converts the two-dimensional identification from the nodes array to a single number.
+//That number will be used as index at the "origin" array and at the "groupSize" array.
+int convertNodeID(int index1, int index2, int lenght)
+{
+    return (index1*lenght) + index2;
+}
+
+int main()
+{
+    //The variable "origin" indicates the root of all the node.
+    int origin[40000];
+    //The variable "groupSize" will be used to compute the size of each group.
+    int groupSize[40000];
+    //The variable "nodes" is a two-dimensional array, each position of the array represents a node. The value in the position is related to the color of the node.
+    int nodes[200][200];
+    //The variable "height" is the number of rows.
+    int height;
+    //The variable "length" is the number of columns.
+    int lenght;
+
+    int index1 , index2 , node1, node2, convertedID, smallestGroup = 40001;
+
+    //Reading the number of rows and columns.
+    scanf("%d %d",&height,&lenght);
+    //Reading the value of the nodes.
+    for(index1 = 0;index1 < height;index1++)
+    {
+        for(index2 = 0;index2 < lenght;index2++)
+        {
+            scanf("%d",&nodes[index1][index2]);
+            convertedID = convertNodeID(index1,index2,lenght);
+            //The origin of each node is itself at first. They are not linked with any external group.
+            origin[convertedID] = convertedID;
+            groupSize[convertedID] = 0;
+        }
+    }
+
+    //Identifying the nodes that have the same color and binding them.
+    for(index1 = 0;index1 < height;index1++)
+    {
+        for(index2 = 0;index2 < lenght;index2++)
+        {
+
+            //Verifying if a node is not the last of his column.
+            if(index1+1 < height)
+            {
+                //Verifying if the nodes have the same color.
+                if(nodes[index1][index2] == nodes[index1+1][index2])
+                {
+                    node1 = convertNodeID(index1,index2,lenght);
+                    node2 = convertNodeID(index1+1,index2,lenght);
+                    //Binding the groups of the nodes.
+                    unionN(node1,node2,origin);
+                }
+            }
+
+            //Verifying if a node is not the last of his row.
+            if(index2+1 < lenght)
+            {
+                //Verifying if the nodes have the same color.
+                if(nodes[index1][index2] == nodes[index1][index2+1])
+                {
+
+                    node1 = convertNodeID(index1,index2,lenght);
+                    node2 = convertNodeID(index1,index2+1,lenght);
+                    //Binding the groups of the nodes.
+                    unionN(node1,node2,origin);
+                }
+            }
+
+        }
+    }
+
+    //Finding the origin of each node and computing the size of the groups.
+    for(index1 = 0;index1 < (lenght*height);index1++)
+    {
+        groupSize[find(origin[index1],origin)]++;
+    }
+
+    //Locking for the smallest group.
+    for(index1 = 0;index1 < (lenght*height);index1++)
+    {
+        if(groupSize[index1] < smallestGroup && groupSize[index1] != 0)
+        {
+            smallestGroup = groupSize[index1];
+        }
+    }
+    //Printing the result.
+    printf("%d\n",smallestGroup);
+
+    return 0;
+}
