@@ -39,7 +39,7 @@ int convertNodeID(int index1, int index2, int lenght)
 
 int main()
 {
-    //The variable "origin" indicates the root of all the node.
+    //The variable "origin" indicates the root of all the nodes.
     int origin[40000];
     //The variable "groupSize" will be used to compute the size of each group.
     int groupSize[40000];
