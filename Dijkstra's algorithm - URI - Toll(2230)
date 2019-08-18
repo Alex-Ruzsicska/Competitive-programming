@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+//The nodes represents the cities.
+//Every city has a distance to the initial city and a status(0 if the city hasn't been visited yet and 1 if it has).
+struct node {
+    int distance;
+    int status;
+}city[50];
+//The Dijkstra's algorithm finds the shortest path between an initial node and all the nodes in the graph.
+//The function "dijkstra" receives the number of nodes (cities) and the adjacency matrix.
+void dijkstra(int adj[50][50], int numC)
+{
+    int closer = 10000, closerIndex = -1, i;
+
+    while(1)
+    {
+        //The variable "closerIndex" contains the index of the city that is closer to the initial city.
+        closerIndex = -1;
+        //The variable "closer" contains the current shortest distance between the initial city and a city in the graph.
+        closer = 10000;
+        //Searching for the closer city.
+        for(i=0;i<numC;i++)
+        {
+            //Only the cities that were not visited are considered (status equals to 0).
+            if(city[i].distance < closer && city[i].status == 0)
+            {
+                closer = city[i].distance;
+                closerIndex = i;
+            }
+        }
+        //When "closerIndex" is equals to -1 it means that all the cities connected to the initial city were visited,
+        //the the function can be returned.
+        if(closerIndex == -1){break;}
+        //When "closerIndex" is different of -1 a city was found.
+        //"city.status" receives 1 to indicate that it will be visited.
+        city[closerIndex].status = 1;
+        //Visiting all the adjacencies of the city.
+        for(i=0;i<numC;i++)
+        {
+            
+            if(adj[closerIndex][i] == 1)
+            {
+                //If a closer path was found the distance value is updated.
+                if(city[i].distance > (city[closerIndex].distance + 1))
+                {
+                    city[i].distance = city[closerIndex].distance + 1;
+                }
+            }
+        }
+
+    }
+}
+
+
+int main()
+{
+    int numC, numR, start, maxD, x, y, adj[50][50], test = 1;
+    int i,j;
+    while(1)
+    {
+        //Reading the input (number of cities, number of roads, initial city, maximum distance).
+        scanf("%d %d %d %d",&numC,&numR,&start,&maxD);
+        //Verifying if it isn't the final line.
+        if(numC==0 && numR==0 && start==0 && maxD==0) {break;}
+        //Initializing the adjacency matrix.
+        memset(adj,0,sizeof(int)*50*50);
+        //Reading the edges.
+        for(i=0;i<numR;i++)
+        {
+            scanf("%d %d",&x,&y);
+            //Adding the adjacency on the matrix.
+            adj[x-1][y-1] = adj[y-1][x-1] = 1;
+        }
+        //Initializing the nodes.
+        for(i=0;i<numC;i++)
+        {
+            city[i].distance = 10000;
+            city[i].status = 0;
+        }
+        //Determining the start city.
+        city[start-1].distance = 0;
+        //Calling the Dijkstra's algorithm.
+        dijkstra(adj,numC);
+        //Printing the results.
+        printf("Teste %d\n",test);
+        test++;
+        for(i=0;i<numC;i++)
+        {
+            if(city[i].distance > 0 && (city[i].distance <= maxD))
+            {printf("%d ",i+1);}
+        }
+
+        printf("\n\n");
+    }
+
+    return 0;
+
+}
